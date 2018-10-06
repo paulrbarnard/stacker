@@ -17,16 +17,19 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application
-	NSArray *userDefaults = [NSArray arrayWithObjects:@"10",@"2",@"1",@"0",@"1",@"0",@"1",nil];
-	NSArray *keys = [NSArray arrayWithObjects:@"steps",@"period",@"focus",@"fine",@"medium",@"coarse",@"home",nil];
+	NSArray *userDefaults = [NSArray arrayWithObjects:@"10",@"2",@"1",@"0",@"1",@"0",@"1",@"1",nil];
+	NSArray *keys = [NSArray arrayWithObjects:@"steps",@"period",@"focus",@"fine",@"medium",@"coarse",@"home",@"stepSize",nil];
 	defaultPrefs = [NSDictionary dictionaryWithObjects:userDefaults forKeys:keys];
 	prefs = [NSUserDefaults standardUserDefaults];
 	[prefs registerDefaults:defaultPrefs];
 	
 	steps = [[prefs valueForKey:@"steps"] intValue];
+    stepSize = [[prefs valueForKey:@"stepSize"] intValue];
 	period = [[prefs valueForKey:@"period"] floatValue];
 	focus = [[prefs valueForKey:@"focus"] floatValue];
 	stepsText.intValue = steps;
+    stepSizeText.intValue = stepSize;
+    stepSizeSlider.intValue = stepSize;
 	periodText.floatValue = period;
 	focusText.floatValue = focus;
 	StatusText.stringValue = @"";
@@ -44,6 +47,7 @@
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
 	// Insert code here to tear down your application
 	[prefs setObject:[NSString stringWithFormat:@"%d",steps] forKey:@"steps"];
+    [prefs setObject:[NSString stringWithFormat:@"%d",stepSize] forKey:@"stepSize"];
 	[prefs setObject:[NSString stringWithFormat:@"%f",period] forKey:@"period"];
 	[prefs setObject:[NSString stringWithFormat:@"%f",focus] forKey:@"focus"];
 	[prefs setObject:[NSString stringWithFormat:@"%ld",(long)fineRadio.state] forKey:@"fine"];
@@ -86,15 +90,17 @@
 
 -(void)stepFocus{
 	[self activateRemote];
-	NSAppleScript *command;
-	if(fineRadio.state == TRUE){
-		command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"rr\""];
-	} else if(coarseRadio.state == TRUE){
-		command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"t\""];
-	} else {
-		command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"ttttt\""];
-	}
-	[command executeAndReturnError:nil];
+    for (int i=0; i<stepSize; i++) {
+        NSAppleScript *command;
+        if(fineRadio.state == TRUE){
+            command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"r\""];
+        } else if(coarseRadio.state == TRUE){
+            command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"t\""];
+        } else {
+            command = [[NSAppleScript alloc] initWithSource:@"tell application \"System Events\" to keystroke \"ttttt\""];
+        }
+        [command executeAndReturnError:nil];
+    }
 }
 
 -(void)takeImage{
@@ -138,6 +144,11 @@
 - (IBAction)xCoarseChanged:(id)sender {
 	fineRadio.state = !xCoarseRadio.state;
 	coarseRadio.state = !xCoarseRadio.state;
+}
+
+- (IBAction)stepSizeChaged:(id)sender {
+    stepSize = stepSizeSlider.intValue;
+    stepSizeText.intValue = stepSize;
 }
 
 

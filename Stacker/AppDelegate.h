@@ -11,6 +11,7 @@
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
 	NSAppleScript *key;
 	int steps;
+    int stepSize;
 	int thisStep;
 	float period;
 	float focus;
@@ -30,6 +31,8 @@
 	__weak IBOutlet NSButton *coarseRadio;
 	__weak IBOutlet NSButton *xCoarseRadio;
 	__weak IBOutlet NSButton *homeCheck;
+    __weak IBOutlet NSSlider *stepSizeSlider;
+    __weak IBOutlet NSTextField *stepSizeText;
 }
 
 
@@ -41,6 +44,7 @@
 - (IBAction)fineChanged:(id)sender;
 - (IBAction)coarseChanged:(id)sender;
 - (IBAction)xCoarseChanged:(id)sender;
+- (IBAction)stepSizeChaged:(id)sender;
 
 
 @end
